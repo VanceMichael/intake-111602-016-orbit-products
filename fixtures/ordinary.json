@@ -1,0 +1,36 @@
+{
+  "phases": [
+    {
+      "routes": [
+        {
+          "path": "/products/rapid.sp3",
+          "headers": {
+            "content-type": "text/plain"
+          },
+          "body": "#cP2026 10 12  0  0  0.00000000       2 ORBIT IGS20 HLM IGS\n## 2440  86400.00000000   900.00000000 61400 0.0000000000000\n+    2   G01G02\n++         5  5\n%c cc GPS ccc cccc cccc cccc ccccc ccccc ccccc ccccc\n%f  1.2500000  1.025000000  0.00000000000  0.000000000000000\n*  2026 10 12  0  0  0.00000000\nPG01  12345.000000  22345.000000  20345.000000      0.001000\nPG02  14345.000000  24345.000000  21345.000000 999999.999999\n*  2026 10 12  0 15  0.00000000\nPG01  12346.000000  22346.000000  20346.000000      0.002000\nPG02      0.000000      0.000000      0.000000 999999.999999\nEOF\n"
+        },
+        {
+          "path": "/releases",
+          "headers": {
+            "content-type": "application/json"
+          },
+          "body": "{\"releases\": [{\"id\": \"rapid-a\", \"orbit\": \"/products/rapid.sp3\", \"agency\": \"lab-igs\", \"solution\": \"rapid\", \"frame\": \"IGS20\", \"timeSystem\": \"GPS\", \"span\": [\"2026-10-12T00:00:00\", \"2026-10-12T00:15:00\"], \"clock\": \"/products/rapid.clk\"}, {\"id\": \"final-b\", \"orbit\": \"/products/final.sp3\", \"agency\": \"other\", \"solution\": \"final\", \"frame\": \"IGb20\", \"timeSystem\": \"GPS\"}]}"
+        },
+        {
+          "path": "/products/final.sp3",
+          "headers": {
+            "content-type": "text/plain"
+          },
+          "body": "#cP2026 10 12  0  0  0.00000000       2 ORBIT IGb20 HLM IGS\n## 2440  86400.00000000   900.00000000 61400 0.0000000000000\n+    2   G01G02\n++         5  5\n%c cc GPS ccc cccc cccc cccc ccccc ccccc ccccc ccccc\n%f  1.2500000  1.025000000  0.00000000000  0.000000000000000\n*  2026 10 12  0  0  0.00000000\nPG01  12345.200000  22345.000000  20345.000000      0.001000\nPG02  14345.000000  24345.000000  21345.000000 999999.999999\n*  2026 10 12  0 15  0.00000000\nPG01  12346.000000  22346.000000  20346.000000      0.002000\nPG02      0.000000      0.000000      0.000000 999999.999999\nEOF\n"
+        },
+        {
+          "path": "/products/rapid.clk",
+          "headers": {
+            "content-type": "text/plain"
+          },
+          "body": "     3.04           C                                       RINEX VERSION / TYPE\n                                                            END OF HEADER\nAS G01  2026 10 12 00 00  0.000000  1   1.000000000000E-09\n"
+        }
+      ]
+    }
+  ]
+}
