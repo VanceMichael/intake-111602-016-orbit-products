@@ -2,6 +2,7 @@ import { createServer } from 'node:http';
 import { fileURLToPath } from 'node:url';
 import { Catalog } from './catalog.mjs';
 import { decode } from './decode.mjs';
+import { executeClaim } from './claim.mjs';
 import { SourceClient } from './transport.mjs';
 import { profile } from './profile.mjs';
 
@@ -33,6 +34,24 @@ export async function startApplication({ source, root, port = 0 }) {
         return response.end(JSON.stringify(receipt));
       }
       if (request.method === 'GET' && url.pathname === '/receipts') return response.end(JSON.stringify(await catalog.list()));
+      if (request.method === 'POST' && url.pathname === '/claims') {
+        const chunks = [];
+        for await (const chunk of request) chunks.push(chunk);
+        const criteria = JSON.parse(Buffer.concat(chunks) || '{}');
+        const manifest = await executeClaim({ source, catalog, criteria });
+        response.statusCode = 201;
+        return response.end(JSON.stringify(manifest));
+      }
+      if (request.method === 'GET' && url.pathname === '/claims') return response.end(JSON.stringify(await catalog.claims()));
+      if (request.method === 'GET' && url.pathname.startsWith('/claims/')) {
+        try {
+          return response.end(JSON.stringify(await catalog.claim(url.pathname.split('/').at(-1))));
+        } catch (error) {
+          if (error.code !== 'ENOENT' && !/领取编号/.test(error.message)) throw error;
+          response.statusCode = 404;
+          return response.end(JSON.stringify({ error: '没有此领取版本' }));
+        }
+      }
       if (request.method === 'GET' && url.pathname.startsWith('/objects/')) {
         response.setHeader('content-type', 'application/octet-stream');
         return response.end(await catalog.object(url.pathname.split('/').at(-1)));

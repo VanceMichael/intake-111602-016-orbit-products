@@ -11,6 +11,7 @@ export class Catalog {
   async initialize() {
     await mkdir(join(this.root, 'objects'), { recursive: true });
     await mkdir(join(this.root, 'receipts'), { recursive: true });
+    await mkdir(join(this.root, 'claims'), { recursive: true });
     return this;
   }
 
@@ -53,6 +54,31 @@ export class Catalog {
     await this.initialize();
     const files = (await readdir(join(this.root, 'receipts'))).filter(name => name.endsWith('.json')).sort();
     return Promise.all(files.map(name => readFile(join(this.root, 'receipts', name), 'utf8').then(JSON.parse)));
+  }
+
+  async recordClaim(manifest) {
+    if (!manifest?.id) throw new TypeError('领取版本缺少编号');
+    const operation = this.serial.then(async () => {
+      await this.initialize();
+      await this.atomic(join(this.root, 'claims', `${manifest.id}.json`),
+        Buffer.from(JSON.stringify(manifest, null, 2)));
+      return manifest;
+    });
+    this.serial = operation.catch(() => {});
+    return operation;
+  }
+
+  async claims() {
+    await this.initialize();
+    const files = (await readdir(join(this.root, 'claims'))).filter(name => name.endsWith('.json'));
+    const all = await Promise.all(files.map(name => readFile(join(this.root, 'claims', name), 'utf8').then(JSON.parse)));
+    return all.sort((a, b) => String(a.createdAt).localeCompare(String(b.createdAt)) || String(a.id).localeCompare(String(b.id)));
+  }
+
+  async claim(id) {
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(id)) throw new Error('无效的领取编号');
+    await this.initialize();
+    return JSON.parse(await readFile(join(this.root, 'claims', `${id}.json`), 'utf8'));
   }
 
   async object(digest) {

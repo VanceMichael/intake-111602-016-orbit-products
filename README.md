@@ -15,11 +15,11 @@ npm run demo
 
 `demo` 临时启动来源和查看服务，展示当前资料并核对保存后的原件；结束时关闭所有监听并移除临时目录。不会连接外部来源。`test` 校验已有预览、资料控制和原件持久化；测试通过只说明当前版本已有能力正常。
 
-需要交互时分别运行 `npm run source` 与 `npm start`。来源默认监听本机 4310 端口，应用默认监听 4320；可用 `PORT`、`SOURCE_URL`、`DATA_DIR` 配置。`GET /preview` 获取预览，`POST /receipts` 接收当前资料，`GET /receipts` 查询凭据，`GET /objects/<摘要>` 回读原件。应用只允许配置到本机的资料服务。
+需要交互时分别运行 `npm run source` 与 `npm start`。来源默认监听本机 4310 端口，应用默认监听 4320；可用 `PORT`、`SOURCE_URL`、`DATA_DIR` 配置。`GET /preview` 获取预览，`POST /receipts` 接收当前资料，`GET /receipts` 查询凭据，`GET /objects/<摘要>` 回读原件。`POST /claims` 按实验时段领取产品并形成不可变版本，`GET /claims`、`GET /claims/<编号>` 查询领取版本。应用只允许配置到本机的资料服务。
 
 ## 目录
 
-`source/` 负责资料源的发布日期和传输状态；`src/decode.mjs` 解释一份来源资料；`src/catalog.mjs` 管理不可变原件及接收凭据；`src/app.mjs` 提供查看服务。资料含义及来源控制见 `docs/资料接口.md`。
+`source/` 负责资料源的发布日期和传输状态；`src/decode.mjs` 解释一份来源资料；`src/catalog.mjs` 管理不可变原件、接收凭据与领取版本；`src/claim.mjs` 按实验时段核对依据并组合产品；`src/app.mjs` 提供查看服务。资料含义及来源控制见 `docs/资料接口.md`。
 
 ## 容器
 

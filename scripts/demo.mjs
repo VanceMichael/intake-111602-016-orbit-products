@@ -14,6 +14,11 @@ try {
   const body = await fetch(`${app.base}/objects/${saved.digest}`).then(response => response.arrayBuffer());
   if (body.byteLength !== saved.bytes) throw new Error('原始资料长度不符');
   process.stdout.write(`原件已接收：${saved.digest}，${saved.bytes} 字节\n`);
+  const claim = await fetch(`${app.base}/claims`, { method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ start: '2026-10-12T00:00:00', end: '2026-10-12T00:15:00',
+      agency: 'lab-igs', frame: 'IGS20', timeSystem: 'GPS' }) }).then(response => response.json());
+  process.stdout.write(`时段领取版本：${claim.id}\n${JSON.stringify({ basis: claim.basis, releases: claim.releases, gaps: claim.coverage.gaps }, null, 2)}\n`);
 } finally {
   await app.close();
   await source.close();
